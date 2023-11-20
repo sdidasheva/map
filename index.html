@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=0ad49556-8ad4-46cc-bd44-5ac0803a9d4e&lang=ru_RU"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+						overflow: hidden;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+
+			let data= [
+				{id: 1,
+					coords: [55.8, 37.72],
+					baloonText: "1"
+				},
+				{id: 2,
+					coords: [65.8, 37.72],
+					baloonText: "2"
+				},
+				{id: 3,
+					coords: [55.8, 47.72],
+					baloonText: "3"
+				},
+				{id: 4,
+					coords: [57.8, 25.72],
+					baloonText: "4"
+				}
+			]
+        ymaps.ready(initMap);
+
+        function initMap() {
+            const map = new ymaps.Map('map', {
+                center: [48.11, 66.22],
+                zoom: 5,
+        controls: []	
+            });
+
+						const kazakhstanBounds = [
+                [55.2767, 62.0833],
+                [55.2767, 87.3099],
+                [49.3557, 87.3099],
+                [49.3557, 62.0833],
+                [55.2767, 62.0833]
+            ];
+
+            // Создаем полигон границ Казахстана
+            const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
+                fillColor: '#00000000', // Цвет заливки
+                strokeColor: '#0000FF', // Цвет границы
+                opacity: 0.5, // Прозрачность
+                strokeWidth: 2 // Ширина линии границы
+            });
+
+            // Добавляем полигон на карту
+            map.geoObjects.add(kazakhstanPolygon);
+						const clusterer = new ymaps.Clusterer({
+                preset: 'islands#invertedBlueClusterIcons',
+                groupByCoordinates: false,
+                clusterDisableClickZoom: false,
+                // clusterHideIconOnBalloonOpen: false,
+                // geoObjectHideIconOnBalloonOpen: false
+            });
+
+						data.forEach(item => {
+                const placemark = new ymaps.Placemark(
+                    item.coords,
+                    {
+                        balloonContentHeader: `<span>${item.baloonText}</span>`,
+                        balloonContentBody: `<p>Some additional information for ${item.baloonText}</p>`,
+                        balloonContentFooter: 'Footer content',
+                    },
+                    {
+                        preset: 'islands#blueIcon'
+                    }
+                );
+
+                clusterer.add(placemark);
+            });
+
+            map.geoObjects.add(clusterer);
+
+
+						ymaps.borders
+        .load("KZ", {
+          lang: "ru",
+          quality: 1
+        })
+        .then((res) => console.log(res))
+						
+        }
+    </script>
+</body>
+</html>
