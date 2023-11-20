@@ -50,24 +50,24 @@
         controls: []	
             });
 
-						const kazakhstanBounds = [
-                [55.2767, 62.0833],
-                [55.2767, 87.3099],
-                [49.3557, 87.3099],
-                [49.3557, 62.0833],
-                [55.2767, 62.0833]
-            ];
+						// const kazakhstanBounds = [
+            //     [55.2767, 62.0833],
+            //     [55.2767, 87.3099],
+            //     [49.3557, 87.3099],
+            //     [49.3557, 62.0833],
+            //     [55.2767, 62.0833]
+            // ];
 
-            // Создаем полигон границ Казахстана
-            const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
-                fillColor: '#00000000', // Цвет заливки
-                strokeColor: '#0000FF', // Цвет границы
-                opacity: 0.5, // Прозрачность
-                strokeWidth: 2 // Ширина линии границы
-            });
+            // // Создаем полигон границ Казахстана
+            // const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
+            //     fillColor: '#00000000', // Цвет заливки
+            //     strokeColor: '#0000FF', // Цвет границы
+            //     opacity: 0.5, // Прозрачность
+            //     strokeWidth: 2 // Ширина линии границы
+            // });
 
             // Добавляем полигон на карту
-            map.geoObjects.add(kazakhstanPolygon);
+            // map.geoObjects.add(kazakhstanPolygon);
 						const clusterer = new ymaps.Clusterer({
                 preset: 'islands#invertedBlueClusterIcons',
                 groupByCoordinates: false,
@@ -95,13 +95,32 @@
             map.geoObjects.add(clusterer);
 
 
-						ymaps.borders
+						var objectManager = new ymaps.ObjectManager();
+      ymaps.borders
         .load("KZ", {
           lang: "ru",
-          quality: 1
+          quality: 0
         })
-        .then((res) => console.log(res))
-						
+        .then(function(result) {
+          var queue = [];
+          var regions = result.features.reduce(function(acc, feature) {
+            var iso = feature.properties.iso3166;
+            feature.id = iso;
+            feature.options = {
+              fillOpacity: 0.6,
+              strokeColor: "#FFF",
+              strokeOpacity: 0.5
+            };
+            acc[iso] = feature;
+            return acc;
+          }, {});
+          result.features = [];
+          for (var reg in regions) {
+            result.features.push(regions[reg]);
+          }
+          objectManager.add(result);
+          map.geoObjects.add(objectManager);
+        });
         }
     </script>
 </body>
