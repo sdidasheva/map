@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map</title>
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=0ad49556-8ad4-46cc-bd44-5ac0803a9d4e&lang=ru_RU"></script>
+    <script src="https://api-maps.yandex.ru/v3/?apikey=0ad49556-8ad4-46cc-bd44-5ac0803a9d4e&lang=ru_RU"></script>
     <style>
         body, html {
             margin: 0;
@@ -41,62 +41,113 @@
 					baloonText: "4"
 				}
 			]
-        ymaps.ready(initMap);
-
-        function initMap() {
-            const map = new ymaps.Map('map', {
-                center: [48.11, 66.22],
-                zoom: 5,
-        controls: []	
-            });
-
-						// const kazakhstanBounds = [
-            //     [55.2767, 62.0833],
-            //     [55.2767, 87.3099],
-            //     [49.3557, 87.3099],
-            //     [49.3557, 62.0833],
-            //     [55.2767, 62.0833]
-            // ];
-
-            // // Создаем полигон границ Казахстана
-            // const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
-            //     fillColor: '#00000000', // Цвет заливки
-            //     strokeColor: '#0000FF', // Цвет границы
-            //     opacity: 0.5, // Прозрачность
-            //     strokeWidth: 2 // Ширина линии границы
-            // });
-
-            // Добавляем полигон на карту
-            // map.geoObjects.add(kazakhstanPolygon);
-						const clusterer = new ymaps.Clusterer({
-                preset: 'islands#invertedBlueClusterIcons',
-                groupByCoordinates: false,
-                clusterDisableClickZoom: false,
-                // clusterHideIconOnBalloonOpen: false,
-                // geoObjectHideIconOnBalloonOpen: false
-            });
-
-						data.forEach(item => {
-                const placemark = new ymaps.Placemark(
-                    item.coords,
-                    {
-                        balloonContentHeader: `<span>${item.baloonText}</span>`,
-                        balloonContentBody: `<p>Some additional information for ${item.baloonText}</p>`,
-                        balloonContentFooter: 'Footer content',
-                    },
-                    {
-                        preset: 'islands#blueIcon'
-                    }
-                );
-
-                clusterer.add(placemark);
-            });
-
-            map.geoObjects.add(clusterer);
+        // ymaps.ready(initMap);
 
 
-						var objectManager = new ymaps.ObjectManager();
-      ymaps.borders
+				
+        // function initMap() {
+        //     const map = new ymaps.Map('map', {
+        //         center: [48.11, 66.22],
+        //         zoom: 5,
+        // controls: []	
+        //     });
+
+				// 		// const kazakhstanBounds = [
+        //     //     [55.2767, 62.0833],
+        //     //     [55.2767, 87.3099],
+        //     //     [49.3557, 87.3099],
+        //     //     [49.3557, 62.0833],
+        //     //     [55.2767, 62.0833]
+        //     // ];
+
+        //     // // Создаем полигон границ Казахстана
+        //     // const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
+        //     //     fillColor: '#00000000', // Цвет заливки
+        //     //     strokeColor: '#0000FF', // Цвет границы
+        //     //     opacity: 0.5, // Прозрачность
+        //     //     strokeWidth: 2 // Ширина линии границы
+        //     // });
+
+        //     // Добавляем полигон на карту
+        //     // map.geoObjects.add(kazakhstanPolygon);
+				// 		const clusterer = new ymaps.Clusterer({
+        //         preset: 'islands#invertedBlueClusterIcons',
+        //         groupByCoordinates: false,
+        //         clusterDisableClickZoom: false,
+        //         // clusterHideIconOnBalloonOpen: false,
+        //         // geoObjectHideIconOnBalloonOpen: false
+        //     });
+
+				// 		data.forEach(item => {
+        //         const placemark = new ymaps.Placemark(
+        //             item.coords,
+        //             {
+        //                 balloonContentHeader: `<span>${item.baloonText}</span>`,
+        //                 balloonContentBody: `<p>Some additional information for ${item.baloonText}</p>`,
+        //                 balloonContentFooter: 'Footer content',
+        //             },
+        //             {
+        //                 preset: 'islands#blueIcon'
+        //             }
+        //         );
+
+        //         clusterer.add(placemark);
+        //     });
+
+        //     map.geoObjects.add(clusterer);
+
+
+				// 		var objectManager = new ymaps3.ObjectManager();
+				// 		ymaps3.borders
+        // .load("KZ", {
+        //   lang: "ru",
+        //   quality: 0
+        // })
+        // .then(function(result) {
+        //   var queue = [];
+        //   var regions = result.features.reduce(function(acc, feature) {
+        //     var iso = feature.properties.iso3166;
+        //     feature.id = iso;
+        //     feature.options = {
+        //       fillOpacity: 0.6,
+        //       strokeColor: "#FFF",
+        //       strokeOpacity: 0.5
+        //     };
+        //     acc[iso] = feature;
+        //     return acc;
+        //   }, {});
+        //   result.features = [];
+        //   for (var reg in regions) {
+        //     result.features.push(regions[reg]);
+        //   }
+        //   objectManager.add(result);
+        //   map.geoObjects.add(objectManager);
+        // });
+
+
+
+
+        // }
+				initMap();
+
+async function initMap() {
+		await ymaps3.ready;
+
+		const {YMap, YMapDefaultSchemeLayer} = ymaps3;
+
+		const map = new YMap(
+				document.getElementById('map'),
+				{
+						location: {
+								center: [37.588144, 55.733842],
+								zoom: 10
+						}
+				}
+		);
+
+		map.addChild(new YMapDefaultSchemeLayer());
+		var objectManager = new ymaps3.ObjectManager();
+						ymaps3.borders
         .load("KZ", {
           lang: "ru",
           quality: 0
@@ -121,7 +172,7 @@
           objectManager.add(result);
           map.geoObjects.add(objectManager);
         });
-        }
+}
     </script>
 </body>
 </html>
