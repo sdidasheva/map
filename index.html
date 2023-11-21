@@ -123,7 +123,7 @@ function initMap() {
 	map.geoObjects.add(objectManager);
 
 	const clusterer = new ymaps.Clusterer({
-		preset: "islands#invertedBlueClusterIcons",
+		preset: 'islands#invertedDarkGreenClusterIcons',
 		groupByCoordinates: false,
 		clusterDisableClickZoom: false,
 		clusterHideIconOnBalloonOpen: false,
@@ -142,22 +142,24 @@ function initMap() {
 													<p><strong>Потребность: ПСД на госэкспертизе </strong> ${item.needs}</p> 
 													<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p> 
 													</div>`,
-				hintContent: `${item.title}`
+				hintContent: `${item.title}`,
+				iconContent:`${item.title}`
 			},
 			{
-				preset: "islands#darkGreenIcon"
+				preset: 'islands#darkGreenStretchyIcon'
 			}
 		);
 
 		clusterer.add(placemark);
 	});
+
 	data.forEach((item) => {
 		if (item.endLat) {
 			const route = new ymaps.multiRouter.MultiRoute(
 				{
 					referencePoints: [
 						[item.startLat, item.startLon],
-						[item.endLat, item.endLon]
+					[item.endLat, item.endLon]
 					],
 					params: {
 						routingMode: "auto"
@@ -168,33 +170,12 @@ function initMap() {
 					wayPointStartIconFillColor: "#1e98ff",
 					wayPointFinishIconFillColor: "#1e98ff",
 					routeActiveStrokeWidth: 3,
-					routeActiveStrokeColor: "#1e98ff"
-					// balloonLayout: ymaps.templateLayoutFactory.createClass(
-					// 	`<div class='my-balloon'><a class="close" href="#"><img src="/close.svg" alt=""></a><h3>${item.title}</h3><div>	<img src="/icon.svg" alt=""> ${item.peopleAmount} - ${item.peopleAmountAfter}</p></div><div><p><strong>Койко-мест по области:</strong> ${item.places}</p>
-					// 									<p><strong>Объем оказанных услуг:</strong> ${item.services}</p>
-					// 									<p><strong>Реализуемый инвестиционный проект:</strong> ${item.project}</p>
-					// 									<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p>
-					// 									<p><strong>Потребность: ПСД на госэкспертизе </strong> ${item.needs}</p>
-					// 									<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p>
-					// 									</div></div>`, {
-
-					//         build: function () {
-					//             this.constructor.superclass.build.call(this);
-					//             this._$element = $('.my-balloon', this.getParentElement());
-					//             this._$element.find('.close')
-					//                 .on('click', $.proxy(this.onCloseClick, this));
-					//         },
-
-					//         onCloseClick: function (e) {
-					//             e.preventDefault();
-					//             this.events.fire('userclose');
-					//         }
-					//     }
-					// ),
+					routeActiveStrokeColor: "#1e98ff",
+					
 				}
 			);
-
-						map.geoObjects.add(route);
+				map.geoObjects.add(route);
+					
 					}
 				});
 
