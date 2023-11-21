@@ -5,132 +5,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map</title>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=0ad49556-8ad4-46cc-bd44-5ac0803a9d4e&lang=ru_RU"></script>
+		<link href="https://yandex.st/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://yandex.st/jquery/2.2.3/jquery.min.js" type="text/javascript"></script>
+    <script src="multiroute_custom_balloon_layout.js" type="text/javascript"></script>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100vh;
 						overflow: hidden;
+					
         }
 
         #map {
             width: 100vw;
             height: 100vh;
+
+        }
+				.row{
+					display: flex;
+					align-items: center;
+					gap: 10px;
+				}
+				.my-balloon {
+            display: inline-block;
+            padding: 4px 10px;
+            height: fit-content;
+            position: relative;
+            bottom: 80px;
+            left: -10px;
+						height: 400px;
+						overflow-y: auto;
+            width: 420px;
+            color: black;
+            /* text-align: left;
+            vertical-align: middle; */
+            background-color: #FFF;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,.15), 0 5px 15px -7px rgba(0,0,0,.5);
+        }
+				.my-balloon::-webkit-scrollbar {
+					width: 17px;
+					height: 17px;
+				}
+				.my-balloon::-webkit-scrollbar-thumb {
+					min-height: 34px;
+					min-width: 34px;
+					background-color: rgba(170,170,170,.5);
+					background-clip: content-box;
+					border: 5px solid transparent;
+				}
+        .close {
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+	
+
     <script>
+  let data = [
+	{
+		id: 1,
+		startLat: 50.629344, //начальная широта
+		startLon: 57.795846, //начальная долгота
+		endLat: "", //конечная широта (если это маршрут)
+		endLon: "", //конечная долгота (если это маршрут)
+		title: "Каргалинское водохранилище", //название
+		peopleAmount: "187 тыс.чел(2022 г.)", //поле для текста
+		peopleAmountAfter: "231 тыс.чел(2025г)", //поле для текста
+		places: "6017 (I полугодие 2023 г.)", //поле для текста
+		services: "15,6 млрд. тг (9 мес. 2023 г.)", //поле для текста
+		project:
+			"1 на сумму 4 млрд. тг <ul><li>Строительство базы отдыха «Qargaly Eco resort», Каргалинский район (Частные инвестиции, МБ - 4 млрд. тг, 2021-2025 гг.)</li></ul>", //редактор для текста
+		infrastructure:
+			"<ul><li>Подведены сети электроснабжения протяженностью 3,7 км, 2022 (ДКБ - 29,2 млн тг)</li><li>Разработаны ПСД и РП по подведению подъездной дороги к  «Qargaly Eco resort», 3,05 км, 2023 (МБ - 750 млн. тг)</li><li>Установлены СГУ -  2 ед. на территории  «Qargaly Eco resort», 2023 г.</li><li>Ведется разработка ПСД и РП по подведению газоснабжения и водоснабжения «Qargaly Eco resort»</li></ul>", //редактор для текста
+		needs:
+			"<ul><li>Строительство газопровода;</li><li>Строительство  автодороги  от трассы Актобе-Орск к «Qargaly Eco resort»;</li></ul>", //редактор для текста
+		sguNeeds: "11 ед." //поле для текста
+	},
+	{
+		startLat: 51.075554, //начальная широта
+		startLon: 71.771196, //начальная долгота
+		endLat: 50.911344, //конечная широта (если это маршрут)
+		endLon: 72.025418, //конечная долгота (если это маршрут)
+		title: "Каргалинское водохранилище", //название
+		peopleAmount: "187 тыс.чел(2022 г.)", //поле для текста
+		peopleAmountAfter: "231 тыс.чел(2025г)", //поле для текста
+		places: "6017 (I полугодие 2023 г.)", //поле для текста
+		services: "15,6 млрд. тг (9 мес. 2023 г.)", //поле для текста
+		project:
+			"1 на сумму 4 млрд. тг <ul><li>Строительство базы отдыха «Qargaly Eco resort», Каргалинский район (Частные инвестиции, МБ - 4 млрд. тг, 2021-2025 гг.)</li></ul>", //редактор для текста
+		infrastructure:
+			"<ul><li>Подведены сети электроснабжения протяженностью 3,7 км, 2022 (ДКБ - 29,2 млн тг)</li><li>Разработаны ПСД и РП по подведению подъездной дороги к  «Qargaly Eco resort», 3,05 км, 2023 (МБ - 750 млн. тг)</li><li>Установлены СГУ -  2 ед. на территории  «Qargaly Eco resort», 2023 г.</li><li>Ведется разработка ПСД и РП по подведению газоснабжения и водоснабжения «Qargaly Eco resort»</li></ul>", //редактор для текста
+		needs:
+			"<ul><li>Строительство газопровода;</li><li>Строительство  автодороги  от трассы Актобе-Орск к «Qargaly Eco resort»;</li></ul>", //редактор для текста
+		sguNeeds: "11 ед." //поле для текста
+	}
+];
 
-			let data= [
-				{id: 1,
-					startLat: 50.629344,
-					startLon: 57.795846,
-					endLat: "",
-					endLon: "",
-					title: "Каргалинское водохранилище",
-					baloonText: "1",
-					peopleAmount: "187 тыс.чел(2022 г.)",
-					peopleAmountAfter: "231 тыс.чел(2025г)",
-					places: "6017 (I полугодие 2023 г.)",
-					services: "15,6 млрд. тг (9 мес. 2023 г.)",
-					project: "1 на сумму 4 млрд. тг <ul><li>Строительство базы отдыха «Qargaly Eco resort», Каргалинский район (Частные инвестиции, МБ - 4 млрд. тг, 2021-2025 гг.)</li></ul>",
-					infrastructure: "<ul><li>Подведены сети электроснабжения протяженностью 3,7 км, 2022 (ДКБ - 29,2 млн тг)</li><li>Разработаны ПСД и РП по подведению подъездной дороги к  «Qargaly Eco resort», 3,05 км, 2023 (МБ - 750 млн. тг)</li><li>Установлены СГУ -  2 ед. на территории  «Qargaly Eco resort», 2023 г.</li><li>Ведется разработка ПСД и РП по подведению газоснабжения и водоснабжения «Qargaly Eco resort»</li></ul>",
-					needs: "<ul><li>Строительство газопровода;</li><li>Строительство  автодороги  от трассы Актобе-Орск к «Qargaly Eco resort»;</li></ul>",
-					sguNeeds: "11 ед."
-				},
-			
-			]
-        ymaps.ready(initMap);
+ymaps.ready(initMap);
 
+function initMap() {
+	const map = new ymaps.Map("map", {
+		center: [48.11, 66.22],
+		zoom: 5,
+		controls: []
+	});
 
-				
-        function initMap() {
-            const map = new ymaps.Map('map', {
-                center: [48.11, 66.22],
-                zoom: 4,
-        controls: []	
-            });
+	let objectManager = new ymaps.ObjectManager();
+	fetch("./coords.json")
+		.then((response) => response.json())
+		.then((coords) => {
+			objectManager.add(coords);
+		});
 
-						// const kazakhstanBounds = [
-            //     [55.2767, 62.0833],
-            //     [55.2767, 87.3099],
-            //     [49.3557, 87.3099],
-            //     [49.3557, 62.0833],
-            //     [55.2767, 62.0833]
-            // ];
+	map.geoObjects.add(objectManager);
 
-            // // Создаем полигон границ Казахстана
-            // const kazakhstanPolygon = new ymaps.Polygon([kazakhstanBounds], {}, {
-            //     fillColor: '#00000000', // Цвет заливки
-            //     strokeColor: '#0000FF', // Цвет границы
-            //     opacity: 0.5, // Прозрачность
-            //     strokeWidth: 2 // Ширина линии границы
-            // });
+	const clusterer = new ymaps.Clusterer({
+		preset: "islands#invertedBlueClusterIcons",
+		groupByCoordinates: false,
+		clusterDisableClickZoom: false,
+		clusterHideIconOnBalloonOpen: false,
+		geoObjectHideIconOnBalloonOpen: false
+	});
 
-            // Добавляем полигон на карту
-            // map.geoObjects.add(kazakhstanPolygon);
-						const clusterer = new ymaps.Clusterer({
-                preset: 'islands#invertedBlueClusterIcons',
-                groupByCoordinates: false,
-                clusterDisableClickZoom: false,
-                // clusterHideIconOnBalloonOpen: false,
-                // geoObjectHideIconOnBalloonOpen: false
-            });
-
-						data.forEach(item => {
-                const placemark = new ymaps.Placemark(
-                    [item.startLat, item.startLon],
-                    {
-                        balloonContentHeader: `<div><h3>${item.title}</h3><p>${item.peopleAmount} - ${item.peopleAmountAfter}</p></div>`,
-                        balloonContentBody: `<div><p><strong>Койко-мест по области:</strong> ${item.places}</p> 
+	data.forEach((item) => {
+		const placemark = new ymaps.Placemark(
+			[item.startLat, item.startLon],
+			{
+				balloonContentHeader: `<div><h3>${item.title}</h3><p class="row"> 	<img src="/icon.svg" alt=""> ${item.peopleAmount} - ${item.peopleAmountAfter}</p></div>`,
+				balloonContentBody: `<div><p><strong>Койко-мест по области:</strong> ${item.places}</p> 
 													<p><strong>Объем оказанных услуг:</strong> ${item.services}</p> 
 													<p><strong>Реализуемый инвестиционный проект:</strong> ${item.project}</p> 
 													<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p> 
 													<p><strong>Потребность: ПСД на госэкспертизе </strong> ${item.needs}</p> 
 													<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p> 
-													</div>`
-                    },
-                    {
-                        preset: 'islands#blueIcon'
-                    }
-                );
+													</div>`,
+				hintContent: `${item.title}`
+			},
+			{
+				preset: "islands#darkGreenIcon"
+			}
+		);
 
-                clusterer.add(placemark);
-            });
+		clusterer.add(placemark);
+	});
+	data.forEach((item) => {
+		if (item.endLat) {
+			const route = new ymaps.multiRouter.MultiRoute(
+				{
+					referencePoints: [
+						[item.startLat, item.startLon],
+						[item.endLat, item.endLon]
+					],
+					params: {
+						routingMode: "auto"
+					}
+				},
+				{
+					boundsAutoApply: false,
+					wayPointStartIconFillColor: "#1e98ff",
+					wayPointFinishIconFillColor: "#1e98ff",
+					routeActiveStrokeWidth: 3,
+					routeActiveStrokeColor: "#1e98ff"
+					// balloonLayout: ymaps.templateLayoutFactory.createClass(
+					// 	`<div class='my-balloon'><a class="close" href="#"><img src="/close.svg" alt=""></a><h3>${item.title}</h3><div>	<img src="/icon.svg" alt=""> ${item.peopleAmount} - ${item.peopleAmountAfter}</p></div><div><p><strong>Койко-мест по области:</strong> ${item.places}</p>
+					// 									<p><strong>Объем оказанных услуг:</strong> ${item.services}</p>
+					// 									<p><strong>Реализуемый инвестиционный проект:</strong> ${item.project}</p>
+					// 									<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p>
+					// 									<p><strong>Потребность: ПСД на госэкспертизе </strong> ${item.needs}</p>
+					// 									<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p>
+					// 									</div></div>`, {
 
-            map.geoObjects.add(clusterer);
+					//         build: function () {
+					//             this.constructor.superclass.build.call(this);
+					//             this._$element = $('.my-balloon', this.getParentElement());
+					//             this._$element.find('.close')
+					//                 .on('click', $.proxy(this.onCloseClick, this));
+					//         },
 
+					//         onCloseClick: function (e) {
+					//             e.preventDefault();
+					//             this.events.fire('userclose');
+					//         }
+					//     }
+					// ),
+				}
+			);
 
-				// 		var objectManager = new ymaps.ObjectManager();
-				// 		ymaps.borders
-        // .load("KZ", {
-        //   lang: "ru",
-        //   quality: 0
-        // })
-        // .then(function(result) {
-				// 	console.log(result);
-        //   var queue = [];
-        //   var regions = result.features.reduce(function(acc, feature) {
-        //     var iso = feature.properties.iso3166;
-        //     feature.id = iso;
-        //     feature.options = {
-        //       fillOpacity: 0.6,
-        //       strokeColor: "#FFF",
-        //       strokeOpacity: 0.5
-        //     };
-        //     acc[iso] = feature;
-        //     return acc;
-        //   }, {});
-        //   result.features = [];
-        //   for (var reg in regions) {
-        //     result.features.push(regions[reg]);
-        //   }
-        //   objectManager.add(result);
-        //   map.geoObjects.add(objectManager);
-        // });
-        }
-				  </script>
+						map.geoObjects.add(route);
+					}
+				});
+
+				map.geoObjects.add(clusterer);
+			}
+		</script>
 </body>
 </html>
