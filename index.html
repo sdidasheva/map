@@ -82,7 +82,8 @@
 			"<ul><li>Подведены сети электроснабжения протяженностью 3,7 км, 2022 (ДКБ - 29,2 млн тг)</li><li>Разработаны ПСД и РП по подведению подъездной дороги к  «Qargaly Eco resort», 3,05 км, 2023 (МБ - 750 млн. тг)</li><li>Установлены СГУ -  2 ед. на территории  «Qargaly Eco resort», 2023 г.</li><li>Ведется разработка ПСД и РП по подведению газоснабжения и водоснабжения «Qargaly Eco resort»</li></ul>", //редактор для текста
 		needs:
 			"<ul><li>Строительство газопровода;</li><li>Строительство  автодороги  от трассы Актобе-Орск к «Qargaly Eco resort»;</li></ul>", //редактор для текста
-		sguNeeds: "11 ед." //поле для текста
+		sguNeeds: "11 ед.", //поле для текста.
+		img: "https://vechastana.kz/wp-content/uploads/04-82.jpg"
 	},
 	{
 		startLat: 51.075554, //начальная широта
@@ -134,13 +135,13 @@ function initMap() {
 		const placemark = new ymaps.Placemark(
 			[item.startLat, item.startLon],
 			{
-				balloonContentHeader: `<div><h3>${item.title}</h3><p class="row"> 	<img src="/icon.svg" alt=""> ${item.peopleAmount} - ${item.peopleAmountAfter}</p></div>`,
-				balloonContentBody: `<div><p><strong>Койко-мест по области:</strong> ${item.places}</p> 
-													<p><strong>Объем оказанных услуг:</strong> ${item.services}</p> 
-													<p><strong>Реализуемый инвестиционный проект:</strong> ${item.project}</p> 
-													<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p> 
-													<p><strong>Потребность: ПСД на госэкспертизе </strong> ${item.needs}</p> 
-													<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p> 
+				balloonContentBody: `	${item.img ?  `<img src=${item.img} alt="" style="float: left; width: 150px; height: 150px; object-fit: cover; margin-right: 10px;" />` : ""} <div><h3 style="font-size:15px;line-height:1.2;">${item.title}</h3> ${ item.peopleAmountAfter ? `<p class="row" style="font-size:14px;margin-left:-10px; gap: 0">	 ${item.peopleAmount} - ${item.peopleAmountAfter}</p>` : ""}</div>
+<div>${item.places ? `<p><strong>Койко-мест по области:</strong> ${item.places}</p>` : "" }
+												${item.services ? 	`<p><strong>Объем оказанных услуг:</strong> ${item.services}</p>` : "" }
+													${item.project ? `<p><strong></strong> ${item.project}</p>` : ""  }
+										${item.infrastructure ? 	`<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p>` : "" }
+											${item.needs ? 		`<p><strong> </strong> ${item.needs}</p>` : "" }
+												${item.sguNeeds ? `<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p>` : ""} 
 													</div>`,
 				hintContent: `${item.title}`,
 				iconContent:`${item.title}`
@@ -149,7 +150,7 @@ function initMap() {
 				preset: 'islands#darkGreenStretchyIcon'
 			}
 		);
-
+	
 		clusterer.add(placemark);
 	});
 
