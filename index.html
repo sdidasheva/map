@@ -57,6 +57,25 @@
         .close {
             margin-top: 5px;
         }
+				.imgs{
+					float: left;
+					margin-right: 10px;
+					width: 200px;
+					height: 200px;
+					display: flex;
+					box-sizing: border-box;
+overflow-x: scroll;
+scroll-snap-type: x mandatory;
+				}
+				.imgs::-webkit-scrollbar{	height: 2px !important;}
+				.imgs::-webkit-scrollbar-track{	background: white !important;}
+				.imgs::-webkit-scrollbar-thumb {
+		background: #6EB26E !important;
+	}
+				.imgs img {
+  scroll-snap-align: start;
+}
+
     </style>
 </head>
 <body>
@@ -83,7 +102,8 @@
 		needs:
 			"<ul><li>Строительство газопровода;</li><li>Строительство  автодороги  от трассы Актобе-Орск к «Qargaly Eco resort»;</li></ul>", //редактор для текста
 		sguNeeds: "11 ед.", //поле для текста.
-		img: "https://vechastana.kz/wp-content/uploads/04-82.jpg"
+		img: "https://vechastana.kz/wp-content/uploads/04-82.jpg",
+		imgs: ["https://tengrinews.kz/userdata/news/2023/news_508965/thumb_m/photo_442170.jpeg", "https://tengrinews.kz/userdata/news/2023/news_508965/thumb_m/photo_442170.jpeg", "https://tengrinews.kz/userdata/news/2023/news_508965/thumb_m/photo_442170.jpeg"]
 	},
 	{
 		startLat: 51.075554, //начальная широта
@@ -135,7 +155,10 @@ function initMap() {
 		const placemark = new ymaps.Placemark(
 			[item.startLat, item.startLon],
 			{
-				balloonContentBody: `	${item.img ?  `<img src=${item.img} alt="" style="float: left; width: 150px; height: 150px; object-fit: cover; margin-right: 10px;" />` : ""} <div><h3 style="font-size:15px;line-height:1.2;">${item.title}</h3> ${ item.peopleAmountAfter ? `<p class="row" style="font-size:14px;margin-left:-10px; gap: 0">	 ${item.peopleAmount} - ${item.peopleAmountAfter}</p>` : ""}</div>
+				balloonContentBody: `
+				${item.imgs ? `<div class="imgs">${item.imgs.map((img) => (`<img src="${img}" alt="img" />`)).join('')}</div>` : ""}
+
+				<div><h3 style="font-size:15px;line-height:1.2;">${item.title}</h3> ${ item.peopleAmountAfter ? `<p class="row" style="font-size:14px;margin-left:-10px; gap: 0">	 ${item.peopleAmount} - ${item.peopleAmountAfter}</p>` : ""}</div>
 <div>${item.places ? `<p><strong>Койко-мест по области:</strong> ${item.places}</p>` : "" }
 												${item.services ? 	`<p><strong>Объем оказанных услуг:</strong> ${item.services}</p>` : "" }
 													${item.project ? `<p><strong></strong> ${item.project}</p>` : ""  }
