@@ -8,6 +8,11 @@
 		<link href="https://yandex.st/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://yandex.st/jquery/2.2.3/jquery.min.js" type="text/javascript"></script>
     <script src="multiroute_custom_balloon_layout.js" type="text/javascript"></script>
+		<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+/>
+
     <style>
         body, html {
             margin: 0;
@@ -56,33 +61,51 @@
 				}
         .close {
             margin-top: 5px;
+						margin-right: 10px !important;
         }
-				.imgs{
-					float: left;
-					margin-right: 10px;
-					width: 200px;
-					height: 200px;
-					display: flex;
-					box-sizing: border-box;
-overflow-x: scroll;
-scroll-snap-type: x mandatory;
-				}
-				.imgs::-webkit-scrollbar{	height: 2px !important;}
-				.imgs::-webkit-scrollbar-track{	background: white !important;}
-				.imgs::-webkit-scrollbar-thumb {
-		background: #6EB26E !important;
-	}
-				.imgs img {
-  scroll-snap-align: start;
+.modal{
+	display: none;
+	border-radius: 0 !important;
+	border: none !important;
 }
-
+.swiper-container {
+      width: 100%;
+			height: 200px;
+			max-width: 200px !important;
+			max-height: 200px !important;
+			float: left;
+			margin-right: 10px;
+			overflow: hidden;
+			position: relative;
+    }
+		.swiper-wrapper{
+			width: 200px;
+			height: 200px;
+			max-width: 200px;
+		}
+    .swiper-slide {
+      text-align: center;
+    }
+		.swiper-slide img {
+			width: 200px;
+			height: 200px;
+			object-fit: cover;
+		}
+		.swiper-pagination-bullet-active{
+			background: #6EB26E !important;
+		}
     </style>
 </head>
 <body>
     <div id="map"></div>
-	
-
+		<div id="myModal" class="modal">
+			<span class="close">&times;</span>
+			<img class="modal-content" id="modalImg">
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+
+			
   let data = [
 	{
 		id: 1,
@@ -156,7 +179,15 @@ function initMap() {
 			[item.startLat, item.startLon],
 			{
 				balloonContentBody: `
-				${item.imgs ? `<div class="imgs">${item.imgs.map((img) => (`<img src="${img}" alt="img" />`)).join('')}</div>` : ""}
+				${item.imgs ? `<div style="overflow-x: hidden;">
+					<div class="swiper-container">
+  <div class="swiper-wrapper">
+		${item.imgs.map((img, index) => (`  <div class="swiper-slide"><img src="${img}" alt="img"  class="modal-trigger"   data-index="${index}" / /></div>`)).join('')}
+  </div>
+	<div class="swiper-pagination"></div>
+</div>
+					
+					` : ""}
 
 				<div><h3 style="font-size:15px;line-height:1.2;">${item.title}</h3> ${ item.peopleAmountAfter ? `<p class="row" style="font-size:14px;margin-left:-10px; gap: 0">	 ${item.peopleAmount} - ${item.peopleAmountAfter}</p>` : ""}</div>
 <div>${item.places ? `<p><strong>Койко-мест по области:</strong> ${item.places}</p>` : "" }
@@ -165,7 +196,7 @@ function initMap() {
 										${item.infrastructure ? 	`<p><strong>Инфраструктура: </strong> ${item.infrastructure}</p>` : "" }
 											${item.needs ? 		`<p><strong> </strong> ${item.needs}</p>` : "" }
 												${item.sguNeeds ? `<p><strong>Потребность в СГУ по области: </strong> ${item.sguNeeds}</p>` : ""} 
-													</div>`,
+													</div></div>`,
 				hintContent: `${item.title}`,
 				iconContent:`${item.title}`
 			},
@@ -173,7 +204,49 @@ function initMap() {
 				preset: 'islands#darkGreenStretchyIcon'
 			}
 		);
-	
+		placemark.events.add('balloonopen', function () {
+    if (map.balloon.isOpen()) {
+			var swiper = new Swiper(".swiper-container", {
+	slidesPerView: 1,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+});
+
+      console.log("open");		
+			var modal = document.getElementById('myModal');
+    var modalImg = document.getElementById('modalImg');
+
+    // Получаем все изображения с классом 'modal-trigger'
+    var modalTriggers = document.querySelectorAll('.modal-trigger');
+
+    // Добавляем обработчик событий для каждого изображения
+    modalTriggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function() {
+        // Отображаем модальное окно
+        modal.style.display = 'block';
+
+        // Устанавливаем изображение в модальное окно
+        var index = this.getAttribute('data-index');
+        modalImg.src = item.imgs[index];
+      });
+    });
+
+    // Добавляем обработчик события для закрытия модального окна
+    var closeModal = document.querySelector('.close');
+    closeModal.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+
+    // Закрываем модальное окно при клике вне его области
+    window.addEventListener('click', function(event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    });
+    } 
+});
 		clusterer.add(placemark);
 	});
 
@@ -205,6 +278,13 @@ function initMap() {
 
 				map.geoObjects.add(clusterer);
 			}
+
+
+
+
+
+			    // Получаем модальное окно и элемент изображения внутри модального окна
+			
 		</script>
 </body>
 </html>
